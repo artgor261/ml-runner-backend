@@ -1,0 +1,20 @@
+[project]
+name = "ml-runner-backend"
+version = "0.1.0"
+description = "REST API для ML-пайплайна торговых ботов (данные, обучение, эксперименты, модели, валидация)."
+# Нижняя граница = Python 3.10, т.к. код обучения должен исполняться и на
+# Yandex DataSphere (там Python 3.10). Локально допустим 3.11+.
+requires-python = ">=3.10"
+
+[tool.ruff]
+# Целимся в синтаксис 3.10, чтобы случайно не использовать конструкции,
+# несовместимые с интерпретатором DataSphere.
+target-version = "py310"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.black]
+target-version = ["py310"]
+line-length = 100

@@ -1,0 +1,43 @@
+# Полные зависимости backend ml-runner (локальная разработка, Python 3.11+).
+# Версии зафиксированы по проверенному окружению (CPU-сборка torch).
+#
+# Установка (CPU):
+#   pip install -r requirements.txt --extra-index-url https://download.pytorch.org/whl/cpu
+# Для GPU замените индекс на соответствующий CUDA-канал PyTorch.
+
+# --- ML runtime (переиспользуемый код из ноутбуков) ---
+torch==2.12.0+cpu
+pytorch-lightning==2.6.5
+torchmetrics==1.9.0
+darts==0.44.1
+scikit-learn==1.9.0
+numpy==2.4.6
+pandas==3.0.3
+scipy==1.17.1
+
+# --- Данные ---
+aiohttp==3.14.1
+aiomoex==2.2.0
+fastparquet==2026.5.0
+
+# --- Web / API ---
+fastapi==0.118.0
+uvicorn[standard]==0.37.0
+pydantic==2.11.0
+pydantic-settings==2.7.0
+python-multipart==0.0.20
+
+# --- БД ---
+SQLAlchemy==2.0.43
+asyncpg==0.30.0            # async-драйвер для API
+psycopg2-binary==2.9.10   # sync-драйвер для воркера обучения
+alembic==1.16.0
+
+# --- Google Drive ---
+gdown==5.2.0
+
+# --- Yandex DataSphere (CLI-клиент для постановки задач; интеграция будет позже) ---
+# Клиент запускается локально и совместим с Python 3.8+. Сам код обучения,
+# который будет исполняться на DataSphere, рассчитан на Python 3.10 сервера —
+# зависимости удалённой задачи вынесены в requirements-datasphere.txt.
+datasphere
