@@ -55,6 +55,23 @@ def _scan_stats(*, path: Path, tickers: list[str]) -> dict:
     }
 
 
+def _read_rows(*, path: Path, tickers: list[str]) -> dict[str, list[dict]]:
+    """Читает parquet-файлы тикеров и отдаёт строки в JSON-совместимом виде."""
+    data: dict[str, list[dict]] = {}
+    for t in tickers:
+        fp = path / f"{t.upper()}.parquet"
+        if not fp.exists():
+            continue
+        try:
+            df = pd.read_parquet(fp, engine="fastparquet")
+        except Exception as e:  # noqa: BLE001
+            logger.warning("Не удалось прочитать %s: %s", fp, e)
+            continue
+        df = df.astype(object).where(df.notna(), None)
+        data[t.upper()] = df.to_dict(orient="records")
+    return data
+
+
 async def _ensure_unique_name(session: AsyncSession, name: str) -> None:
     existing = await session.scalar(select(Dataset).where(Dataset.name == name))
     if existing is not None:
@@ -99,6 +116,7 @@ async def create_from_moex(session: AsyncSession, req: MoexLoadRequest) -> Datas
     session.add(dataset)
     await session.commit()
     await session.refresh(dataset)
+    dataset.data = await asyncio.to_thread(_read_rows, path=save_dir, tickers=loaded)
     return dataset
 
 
@@ -126,6 +144,7 @@ async def create_from_gdrive(session: AsyncSession, req: GDriveImportRequest) ->
     session.add(dataset)
     await session.commit()
     await session.refresh(dataset)
+    dataset.data = await asyncio.to_thread(_read_rows, path=dest, tickers=tickers)
     return dataset
 
 

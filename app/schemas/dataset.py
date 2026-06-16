@@ -47,3 +47,11 @@ class DatasetRead(BaseModel):
     rows: int | None
     meta: dict
     created_at: datetime
+
+
+class DatasetReadWithData(DatasetRead):
+    """DatasetRead, дополненный исходными строками по каждому тикеру."""
+
+    data: dict[str, list[dict]] = Field(
+        default_factory=dict, description="Загруженные строки датасета, по тикеру"
+    )

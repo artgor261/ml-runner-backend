@@ -11,6 +11,7 @@ from app.api.deps import get_session
 from app.schemas.common import Message
 from app.schemas.dataset import (
     DatasetRead,
+    DatasetReadWithData,
     GDriveImportRequest,
     MoexLoadRequest,
 )
@@ -20,7 +21,7 @@ from app.services.dataset_service import DatasetError
 router = APIRouter(prefix="/datasets", tags=["datasets"])
 
 
-@router.post("/moex", response_model=DatasetRead, status_code=status.HTTP_201_CREATED)
+@router.post("/moex", response_model=DatasetReadWithData, status_code=status.HTTP_201_CREATED)
 async def load_from_moex(req: MoexLoadRequest, session: AsyncSession = Depends(get_session)):
     """Загрузить исторические данные с MOEX (несколько тикеров параллельно)."""
     try:
@@ -29,7 +30,7 @@ async def load_from_moex(req: MoexLoadRequest, session: AsyncSession = Depends(g
         raise HTTPException(status.HTTP_400_BAD_REQUEST, str(e))
 
 
-@router.post("/gdrive", response_model=DatasetRead, status_code=status.HTTP_201_CREATED)
+@router.post("/gdrive", response_model=DatasetReadWithData, status_code=status.HTTP_201_CREATED)
 async def import_from_gdrive(req: GDriveImportRequest, session: AsyncSession = Depends(get_session)):
     """Импортировать датасет из Google Drive по ссылке/ID."""
     try:
