@@ -20,6 +20,5 @@ class Executor(str, enum.Enum):
 
 class DatasetSource(str, enum.Enum):
     MOEX = "moex"
-    LOCAL = "local"
     GDRIVE = "gdrive"
     UPLOAD = "upload"

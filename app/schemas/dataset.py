@@ -23,15 +23,6 @@ class MoexLoadRequest(BaseModel):
     description: str | None = None
 
 
-class LocalImportRequest(BaseModel):
-    """Регистрация датасета из локального каталога с parquet-файлами."""
-
-    name: str
-    path: str = Field(..., description="Путь к каталогу с <TICKER>.parquet")
-    tickers: list[str] | None = Field(None, description="Если не указано — берутся все .parquet из каталога")
-    description: str | None = None
-
-
 class GDriveImportRequest(BaseModel):
     """Импорт датасета из Google Drive (по ссылке/ID папки или файла)."""
 

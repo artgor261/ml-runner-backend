@@ -15,7 +15,7 @@ from app.core.config import settings
 from app.integrations.gdrive import download_from_gdrive
 from app.ml.data_loader import load_all
 from app.models import Dataset, DatasetSource
-from app.schemas.dataset import GDriveImportRequest, LocalImportRequest, MoexLoadRequest
+from app.schemas.dataset import GDriveImportRequest, MoexLoadRequest
 
 logger = logging.getLogger(__name__)
 
@@ -95,35 +95,6 @@ async def create_from_moex(session: AsyncSession, req: MoexLoadRequest) -> Datas
         rows=stats["rows"],
         meta={"board": board, "requested": req.tickers, "skipped": sorted(set(req.tickers) - set(loaded)),
               "per_ticker": stats["per_ticker"]},
-    )
-    session.add(dataset)
-    await session.commit()
-    await session.refresh(dataset)
-    return dataset
-
-
-async def create_from_local(session: AsyncSession, req: LocalImportRequest) -> Dataset:
-    await _ensure_unique_name(session, req.name)
-
-    path = Path(req.path).expanduser()
-    if not path.is_dir():
-        raise DatasetError(f"Каталог не найден: {path}")
-
-    tickers = req.tickers or [p.stem for p in sorted(path.glob("*.parquet"))]
-    if not tickers:
-        raise DatasetError(f"В каталоге нет parquet-файлов: {path}")
-
-    stats = await asyncio.to_thread(_scan_stats, path=path, tickers=tickers)
-    dataset = Dataset(
-        name=req.name,
-        description=req.description,
-        source=DatasetSource.LOCAL,
-        path=str(path),
-        tickers=[t.upper() for t in tickers],
-        start=stats["start"],
-        end=stats["end"],
-        rows=stats["rows"],
-        meta={"per_ticker": stats["per_ticker"]},
     )
     session.add(dataset)
     await session.commit()

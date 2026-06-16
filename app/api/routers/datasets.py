@@ -12,7 +12,6 @@ from app.schemas.common import Message
 from app.schemas.dataset import (
     DatasetRead,
     GDriveImportRequest,
-    LocalImportRequest,
     MoexLoadRequest,
 )
 from app.services import dataset_service
@@ -26,15 +25,6 @@ async def load_from_moex(req: MoexLoadRequest, session: AsyncSession = Depends(g
     """Загрузить исторические данные с MOEX (несколько тикеров параллельно)."""
     try:
         return await dataset_service.create_from_moex(session, req)
-    except DatasetError as e:
-        raise HTTPException(status.HTTP_400_BAD_REQUEST, str(e))
-
-
-@router.post("/local", response_model=DatasetRead, status_code=status.HTTP_201_CREATED)
-async def import_from_local(req: LocalImportRequest, session: AsyncSession = Depends(get_session)):
-    """Зарегистрировать датасет из локального каталога с parquet-файлами."""
-    try:
-        return await dataset_service.create_from_local(session, req)
     except DatasetError as e:
         raise HTTPException(status.HTTP_400_BAD_REQUEST, str(e))
 
