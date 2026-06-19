@@ -48,7 +48,7 @@ def _run(*, model_path: str, parquet_dir: str, req: ValidationRequest) -> dict:
     prepared = prepare_multi(
         tickers=req.tickers,
         parquet_dir=parquet_dir,
-        feature_cols=req.feature_cols or None,
+        feature_cols=[col.lower() for col in req.feature_cols] or None,
     )
     return ml_validate(
         model_path=model_path,
