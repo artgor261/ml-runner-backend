@@ -64,7 +64,7 @@ def execute(run_id: uuid.UUID) -> None:
         prepared = prepare_multi(
             tickers=tickers,
             parquet_dir=parquet_dir,
-            feature_cols=feature_cols or None,
+            feature_cols=[col.lower() for col in feature_cols] or None,
         )
 
         run_dir.mkdir(parents=True, exist_ok=True)
